@@ -1,11 +1,14 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const {
+    v4: uuidv4
+} = require('uuid');
 
-app.set(path.join(__dirname, 'views'));
-app.set(express.static(path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({
     extended: true
 }));
@@ -15,6 +18,7 @@ const date = () => {
 }
 
 const data = [{
+        id: uuidv4(),
         nama: 'Gerd',
         waktu: date(),
         gejala: ['Mual', 'Muntah', 'Sakit Tenggorokan', 'Susah Tidur', 'Bau Mulut', 'Nyeri Ulu pada Hati Seperti Terbakar'],
@@ -23,6 +27,7 @@ const data = [{
         maxPoint: 6
     },
     {
+        id: uuidv4(),
         nama: 'Dispepsia',
         waktu: date(),
         gejala: ['Mual', 'Muntah', 'Nyeri Ulu pada Hati Seperti Terbakar', 'Perut Kembung', 'Sering Sendawa', 'Tidak Nafsu Makan', 'Timbul Asam di Mulut', 'Cepat Kenyang Saat Makan'],
@@ -31,6 +36,7 @@ const data = [{
         maxPoint: 8
     },
     {
+        id: uuidv4(),
         nama: 'Tukak Lambung',
         waktu: date(),
         gejala: ['Nyeri di Leher', 'Nyeri di Punggung', 'Nyeri pada Malam Hari', 'Nyeri Parah saat Belum Makan'],
@@ -39,6 +45,7 @@ const data = [{
         maxPoint: 4
     },
     {
+        id: uuidv4(),
         nama: 'Kanker Lambung',
         waktu: date(),
         gejala: ['Mual', 'Muntah', 'Tidak Nafsu Makan', 'Cepat Kenyang saat Makan', 'Kelelahan', 'Nyeri di Tulang Dada', 'Sulit Menelan Makanan', 'Tinja Berwarna Hitam', 'Kekuningan pada Kulit atau pada Bagian Putih Mata'],
@@ -47,6 +54,7 @@ const data = [{
         maxPoint: 9
     },
     {
+        id: uuidv4(),
         nama: 'Tidak ada Penyakit yang Sesuai',
         waktu: date(),
         gejala: ['Tidak ditemukan Gejala yang sesuai dengan Penyakit'],
@@ -301,8 +309,11 @@ app.post('/g20', (req, res) => {
     if (jawaban === 'y') {
         addPoint('Kanker Lambung')
     }
-    console.log(hasil());
-    res.send('Hasil');
+    const values = hasil();
+    console.log(values);
+    res.render('dashboard/index', {
+        values
+    });
 });
 
 app.listen(3000, () => {

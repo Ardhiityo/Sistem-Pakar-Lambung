@@ -1,0 +1,25 @@
+body {
+    font-family: "Ubuntu", sans-serif;  
+    font-size: 19px;
+}
+
+nav {
+    font-size: 0.9em;
+    letter-spacing: 0.1em;
+}
+
+.row {
+    line-height: 2.1em;
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
+}
