@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pakar | Daftar Akun</title>
+</head>
+
+<body>
+
+    <h1>Daftar Akun</h1>
+    <form action="/register" method="post">
+
+        <label for="nama">Nama</label>
+        <input type="text" name="nama" id="nama" required minlength="5" maxlength="20">
+        <br>
+
+        <label for="sandi">Sandi</label>
+        <input type="password" name="sandi" id="sandi" required minlength="5" maxlength="10"> <br>
+
+        <label for="validasi">Konfirmasi Sandi</label> <input type="password" name="validasi" id="sandi" required
+            minlength="5" maxlength="10"> <br>
+
+        <button type="submit">Kirim</button>
+    </form>
+</body>
+
+</html>

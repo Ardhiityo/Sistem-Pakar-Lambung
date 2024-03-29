@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pakar | Masuk Akun</title>
+</head>
+
+<body>
+    
+    <%= flash_messages %>
+    <form action="/login" method="post">
+        <label for="nama">User Id</label>
+        <input type="text" name="nama" id="nama" required minlength="5" maxlength="20"> <br>
+
+        <label for="password">Sandi</label>
+        <input type="password" name="sandi" id="password" required minlength="5" maxlength="10">
+
+        <button type="submit">Kirim</button>
+    </form>
+</body>
+
+</html>

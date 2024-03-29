@@ -1,17 +1,36 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const bcrypt = require('bcrypt');
+const session = require('express-session');
+const mongoose = require('mongoose');
+const methodOverride = require('method-override');
+const flash = require('connect-flash');
+const User = require('./models/user');
 const {
     v4: uuidv4
 } = require('uuid');
+mongoose.connect('mongodb://127.0.0.1:27017/lambung')
+    .then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use(flash());
+app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false,
+}))
 app.use(express.urlencoded({
     extended: true
 }));
+app.use((req, res, next) => {
+    res.locals.flash_messages = req.flash('flash_messages');
+    next();
+})
 
 const date = () => {
     return `${new Date().getDate()}/${new Date().getMonth()}/${new Date().getFullYear()} ${new Date().getHours()}:${new Date().getMinutes()}`;
@@ -100,12 +119,175 @@ const hasil = () => {
     }
 }
 
+// Authenticate 
+function auth(req, res, next) {
+    if (!req.session.user_id) {
+        //Harap login terlebih dahulu
+        return res.redirect('/login');
+    } else {
+        return next();
+    }
+}
+
+// Authorization
+function author(req, res, next) {
+    if (req.session.user_id) {
+        //Kamu sudah pernah login
+        return res.redirect('/dashboard');
+    } else {
+        return next();
+    }
+}
+
 app.get('/', (req, res) => {
     data.map(d => d.point.length = 0);
+    res.render('index');
+});
+
+app.get('/dashboard', auth, async (req, res) => {
+    const user = await User.findById(req.session.user_id);
+    res.render('dashboard/index', {
+        user
+    });
+})
+
+app.get('/register', author, (req, res) => {
+    res.render('auth/register');
+});
+
+app.post('/register', async (req, res) => {
+    const {
+        nama,
+        sandi,
+        validasi
+    } = req.body;
+    if (nama.length < 5) {
+        //nama harus minimal 5 character
+        req.flash('flash_messages', 'User Id minimal 5 Karakter!');
+        return res.redirect('/register');
+    } else {
+        if (sandi.length < 5) {
+            //sandi harus minimal 5 character 
+            req.flash('flash_messages', 'Sandi minimal 5 Karakter!');
+            return res.redirect('/register');
+        } else {
+            const user = await User.findOne({
+                nama
+            });
+            if (user) {
+                // nama sudah digunakan
+                req.flash('flash_messages', 'Nama sudah digunakan!');
+                return res.redirect('/register');
+            } else {
+                if (sandi !== validasi) {
+                    //sandi harus sama dengan validasi 
+                    req.flash('flash_messages', 'Sandi harus sesuai dengan validasi!');
+                    return res.redirect('/register');
+                } else {
+                    const hashPw = await bcrypt.hash(sandi, 10);
+                    const user = new User({
+                        nama,
+                        sandi: hashPw
+                    });
+                    req.session.user_id = user.id;
+                    await user.save();
+                    // daftar akun berhasil
+                    req.flash('flash_messages', 'Akun sukses terdaftar!');
+                    return res.redirect('/g1');
+                }
+            }
+
+        }
+    }
+});
+
+app.get('/login', author, (req, res) => {
+    res.render('auth/login');
+})
+
+app.post('/login', async (req, res) => {
+    const {
+        nama,
+        sandi
+    } = req.body;
+    if (nama.length < 5) {
+        //Nama minimal harus 5 Characters
+        req.flash('flash_messages', 'User id minimal 5 Karakter!');
+        return res.redirect('/login');
+    } else {
+        if (sandi.length < 5) {
+            //Sandi minimal harus 5 Characters
+            req.flash('flash_messages', 'Sandi minimal 5 Karakter!');
+            return res.redirect('/login');
+        } else {
+            const user = await User.findOne({
+                nama
+            });
+            if (user) {
+                const hashPw = await bcrypt.compare(sandi, user.sandi);
+                if (hashPw) {
+                    req.session.user_id = user.id;
+                    //Masuk akun berhasil!
+                    req.flash('flash_messages', 'Sukses masuk akun!');
+                    return res.redirect('/dashboard');
+                } else {
+                    //Sandi Salah!
+                    req.flash('flash_messages', 'Sandi salah!');
+                    return res.redirect('/login');
+                }
+            } else {
+                //User id tidak ditemukan!
+                req.flash('flash_messages', 'User id tidak ditemukan!');
+                return res.redirect('/login');
+            }
+        }
+    }
+});
+
+app.put('/password', auth, async (req, res) => {
+    const {
+        sandi,
+        validasi
+    } = req.body;
+
+    if (sandi.length < 5) {
+        // Sandi minimal harus 5 Characters
+        req.flash('flash_messages', 'Sandi minimal 5 Karakter!');
+        return res.redirect('/dashboard');
+    } else {
+        if (sandi === validasi) {
+            const user = await User.findById(req.session.user_id);
+            const hashPw = await bcrypt.hash(sandi, 10);
+            user.sandi = hashPw;
+            await user.save();
+            res.redirect('/dashboard');
+        } else {
+            // Ubah Sandi gagal, konfirmasi sandi harus sesuai 
+            req.flash('flash_messages', 'Ubah sandi gagal, konfirmasi sandi harus sesuai!');
+            return res.redirect('/dashboard');
+        }
+    }
+})
+
+app.post('/logout', auth, async (req, res) => {
+    req.session.destroy(() => {
+        res.redirect('/login');
+    })
+})
+
+app.delete('/delete/penyakit', auth, async (req, res) => {
+    const user = await User.findById(req.session.user_id);
+    user.penyakit.splice(0, user.penyakit.length);
+    await user.save();
+    req.flash('flash_messages', 'Riwayat diagnosa sukses terhapus!');
+    res.redirect('/dashboard');
+})
+
+app.get('/g1', auth, (req, res) => {
     res.render('form/g1');
 });
 
-app.post('/g1', (req, res) => {
+app.post('/g1', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -117,7 +299,7 @@ app.post('/g1', (req, res) => {
     res.render('form/g2');
 });
 
-app.post('/g2', (req, res) => {
+app.post('/g2', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -129,7 +311,7 @@ app.post('/g2', (req, res) => {
     res.render('form/g3');
 });
 
-app.post('/g3', (req, res) => {
+app.post('/g3', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -139,7 +321,7 @@ app.post('/g3', (req, res) => {
     res.render('form/g4');
 });
 
-app.post('/g4', (req, res) => {
+app.post('/g4', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -149,7 +331,7 @@ app.post('/g4', (req, res) => {
     res.render('form/g5');
 });
 
-app.post('/g5', (req, res) => {
+app.post('/g5', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -159,7 +341,7 @@ app.post('/g5', (req, res) => {
     res.render('form/g6');
 });
 
-app.post('/g6', (req, res) => {
+app.post('/g6', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -170,7 +352,7 @@ app.post('/g6', (req, res) => {
     res.render('form/g7');
 });
 
-app.post('/g7', (req, res) => {
+app.post('/g7', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -180,7 +362,7 @@ app.post('/g7', (req, res) => {
     res.render('form/g8');
 });
 
-app.post('/g8', (req, res) => {
+app.post('/g8', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -190,7 +372,7 @@ app.post('/g8', (req, res) => {
     res.render('form/g9');
 });
 
-app.post('/g9', (req, res) => {
+app.post('/g9', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -201,7 +383,7 @@ app.post('/g9', (req, res) => {
     res.render('form/g10');
 });
 
-app.post('/g10', (req, res) => {
+app.post('/g10', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -211,7 +393,7 @@ app.post('/g10', (req, res) => {
     res.render('form/g11');
 });
 
-app.post('/g11', (req, res) => {
+app.post('/g11', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -222,7 +404,7 @@ app.post('/g11', (req, res) => {
     res.render('form/g12');
 });
 
-app.post('/g12', (req, res) => {
+app.post('/g12', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -232,7 +414,7 @@ app.post('/g12', (req, res) => {
     res.render('form/g13');
 });
 
-app.post('/g13', (req, res) => {
+app.post('/g13', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -242,7 +424,7 @@ app.post('/g13', (req, res) => {
     res.render('form/g14');
 });
 
-app.post('/g14', (req, res) => {
+app.post('/g14', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -252,7 +434,7 @@ app.post('/g14', (req, res) => {
     res.render('form/g15');
 });
 
-app.post('/g15', (req, res) => {
+app.post('/g15', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -262,7 +444,7 @@ app.post('/g15', (req, res) => {
     res.render('form/g16');
 });
 
-app.post('/g16', (req, res) => {
+app.post('/g16', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -272,7 +454,7 @@ app.post('/g16', (req, res) => {
     res.render('form/g17');
 });
 
-app.post('/g17', (req, res) => {
+app.post('/g17', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -282,7 +464,7 @@ app.post('/g17', (req, res) => {
     res.render('form/g18');
 });
 
-app.post('/g18', (req, res) => {
+app.post('/g18', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -292,7 +474,7 @@ app.post('/g18', (req, res) => {
     res.render('form/g19');
 });
 
-app.post('/g19', (req, res) => {
+app.post('/g19', auth, (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -302,7 +484,7 @@ app.post('/g19', (req, res) => {
     res.render('form/g20');
 });
 
-app.post('/g20', (req, res) => {
+app.post('/g20', auth, async (req, res) => {
     const {
         jawaban
     } = req.body;
@@ -310,10 +492,12 @@ app.post('/g20', (req, res) => {
         addPoint('Kanker Lambung')
     }
     const values = hasil();
-    console.log(values);
-    res.render('dashboard/index', {
-        values
-    });
+    const user = await User.findById(req.session.user_id);
+    for (const value of values) {
+        user.penyakit.push(value);
+    }
+    await user.save();
+    res.redirect('/dashboard');
 });
 
 app.listen(3000, () => {

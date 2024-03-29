@@ -19,6 +19,7 @@
 
 <body>
 
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top shadow">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
@@ -27,7 +28,7 @@
                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
                     <path fill-rule="evenodd"
                         d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
-                </svg> Hallo, Arya</a>
+                </svg> Selamat datang, <%= user.nama %>!</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -35,72 +36,182 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav w-100 d-flex justify-content-end">
 
-                    <a class="nav-link" href="#">
-                        <button class="btn btn-outline-dark mx-2 rounded-1">Ubah Sandi</button>
-                        <button class="btn btn-dark rounded-1">Keluar Akun</button>
+                    <a class="nav-link d-flex" href="#">
+                        <button class="btn btn-outline-dark btn-sm mx-2 rounded-1" data-bs-toggle="modal"
+                            data-bs-target="#staticBackdrop">Ubah Sandi</button>
+
+                        <form action="/logout" method="post">
+                            <button type="submit" class="btn btn-dark btn-sm rounded-1">Keluar Akun</button>
+                        </form>
                     </a>
 
                 </div>
             </div>
         </div>
     </nav>
+    <!-- Navbar -->
+
+    <!-- Content -->
+    <div class="container py-5" style="margin-top: 70px;">
 
 
-
-    <div class="container py-5" style="margin-top: 100px;">
-
-        <div class="row mb-3">
-            <div class="col-6">
-                
-            </div>
-            <div class="col-6 d-flex justify-content-end">
-                <button class="btn btn-sm btn-dark rounded-1">Hapus Riwayat</button>
+        <div class="row d-flex justify-content-start">
+            <div class="col-12">
+                <h6>
+                    <%= flash_messages %>
+                </h6>
             </div>
         </div>
 
-        <div class="container p-3 rounded-1" style="border: 2px solid black;">
-            
-            <% let i=1 %>
-            <% for(const value of values) {%>
-                <table class="table table-hover table-bordered">
-                    <tbody>
-                        <tr>
-                            <th>
-                                #<%= i++ %>
-                            </th>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <th>Id</th>
-                            <td><%= value.id %></td>
-                        </tr>
-                        <tr>
-                            <th>Waktu</th>
-                            <td><%= value.waktu %></td>
-                        </tr>
-                        <tr>
-                            <th>Penyakit</th>
-                            <td>
-                                <%= value.nama %>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Gejala</th>
-                            <td>
-                                <%= value.gejala %>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Solusi</th>
-                            <td>
-                                <%= value.solusi %>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <% } %>
+        <div class="row mb-3">
+            <div class="col-6 d-flex justify-content-start">
+                <% if(user.penyakit.length> 0) {%>
+                    <h4>Terdiagnosa <%= user.penyakit.length %> Penyakit</h4>
+                    <% } else {%>
+                        <h4>Ayo, mulai diagnosa!</h4>
+                        <% }%>
             </div>
+
+            <div class="col-6 d-flex justify-content-end align-items-center">
+                <% if(user.penyakit.length> 0) {%>
+                    <a href="/g1" class="mx-2">
+                        <button class="btn btn-sm btn-outline-dark rounded-1">Diagnosa Lagi</button>
+                    </a>
+                    <% } else {%>
+                        <% if(user.penyakit.length> 0) {%>
+                            <a href="/g1" class="mx-2">
+                                <button class="btn btn-sm btn-outline-dark rounded-1">Mulai
+                                    Diagnosa</button>
+                            </a>
+                            <% } else {%>
+                                <a href="/g1" class="mx-2">
+                                    <button class="btn btn-sm btn-dark rounded-1">Mulai Diagnosa</button>
+                                </a>
+                                <% } %>
+                                    <% } %>
+                                        <% if(user.penyakit.length> 0) {%>
+
+                                            <button type="submit" class="btn btn-sm btn-dark rounded-1"
+                                                data-bs-toggle="modal" data-bs-target="#exampleModal">Hapus
+                                                Riwayat</button>
+                                            <% } %>
+
             </div>
+        </div>
+
+        <% if(user.penyakit.length> 0) {%>
+            <div class="container p-3 rounded-1" style="border: 2px solid black;">
+                <% let i=1 %>
+                    <% for(const value of user.penyakit) {%>
+                        <table class="table table-hover table-bordered">
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        #<%= i++ %>
+                                    </th>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <th>Id</th>
+                                    <td>
+                                        <%= value.id %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <td>
+                                        <%= value.waktu %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Penyakit</th>
+                                    <td>
+                                        <%= value.nama %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Gejala</th>
+                                    <td>
+                                        <%= value.gejala %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Solusi</th>
+                                    <td>
+                                        <%= value.solusi %>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <% } %>
+            </div>
+            <% } %>
+
+    </div>
+    <!-- Content -->
+
+    <!-- Modal Hapus Riwayat-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Yakin Ingin Menghapus?</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Segala data Riwayat kamu akan kami hapus secara permamen, kami harapkan kamu untuk
+                        meyakinkan
+                        diri sebelum riwayat diagnosa kamu akan benar-benar kami hapus secara permanen.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm rounded-1 btn-outline-dark" data-bs-dismiss="modal">Tidak
+                        jadi</button>
+                    <form action="/delete/penyakit?_method=DELETE" method="post">
+                        <button type="submit" class="btn btn-sm btn-dark rounded-1">Hapus saja</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Hapus Riwayat-->
+
+    <!-- Modal Ubah Sandi-->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Ubah Sandi</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="/password?_method=PUT" method="post">
+                        <div class="mb-3">
+                            <label for="sandi" class="form-label">Sandi</label>
+                            <input type="password" class="form-control" name="sandi" id="sandi"
+                                aria-describedby="pwHelp" required minlength="5" maxlength="10">
+                            <div id="pwHelp" class="form-text">Pastikan selalu jaga kerahasian sandi kamu.
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="validasi" class="form-label">Konfirmasi sandi</label>
+                            <input type="password" class="form-control" name="validasi" id="validasi"
+                                aria-describedby="vlHelp" required minlength="5" maxlength="10">
+                            <div id="vlHelp" class="form-text">Konfirmasi ulang sandi kamu, pastikan sudah
+                                benar.</div>
+                        </div>
+                        <div class="row d-flex justify-content-center">
+                            <button type="submit" class="btn btn-dark btn-sm rounded-1 w-75">Kirim</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn rounded-1 btn-outline-dark" data-bs-dismiss="modal">Batal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Ubah Sandi-->
 
     <!-- Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
