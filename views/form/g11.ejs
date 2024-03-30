@@ -1,23 +1,25 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('../partials/form/header') %>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form</title>
-</head>
+    <div class="container d-flex justify-content-center align-items-center">
+        <main class="shadow rounded-3 p-5">
+            <h2 class="text-center">Apakah kamu cepat kenyang saat makan?</h2>
+            <form action="/g11" method="post">
+                <section class="d-flex my-5 justify-content-center align-items-center">
+                    <div class="mb-3 form-check">
+                        <input type="radio" name="jawaban" class="form-check-input" id="y" value="y" required checked>
+                        <label for="y" class="form-check-label">Ya</label>
+                    </div>
 
-<body>
-    <form action="/g11" method="post">
+                    <div class="mb-3 form-check">
+                        <input type="radio" name="jawaban" id="t" value="t" required class="form-check-input">
+                        <label for="t" class="form-check-label">Tidak</label>
+                    </div>
+                </section>
+                <div class="row">
+                    <button type="submit" class="btn btn-dark rounded-1">Selanjutnya</button>
+                </div>
+            </form>
+        </main>
+    </div>
 
-        <h3>Apakah Anda Merasakan Cepat Kenyang Saat Makan?</h3>
-
-        <input type="radio" name="jawaban" id="y" value="y" required checked> <label for="y">Ya</label> <br>
-        <input type="radio" name="jawaban" id="t" value="t" required> <label for="t">Tidak</label> <br>
-
-        <button type="submit">Next</button>
-
-    </form>
-</body>
-
-</html>
+    <%- include('../partials/form/footer') %>

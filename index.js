@@ -7,11 +7,20 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const flash = require('connect-flash');
 const User = require('./models/user');
+const port = process.env.PORT || 3000;
+require('dotenv').config();
 const {
     v4: uuidv4
 } = require('uuid');
-mongoose.connect('mongodb://127.0.0.1:27017/lambung')
-    .then(() => console.log('Connected to MongoDB')).catch(err => console.log(err));
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(process.env.MONGODB_CONNECT_URI);
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (error) {
+        console.log(error);
+        process.exit(1);
+    }
+}
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -283,6 +292,16 @@ app.delete('/delete/penyakit', auth, async (req, res) => {
     res.redirect('/dashboard');
 })
 
+app.delete('/delete/:i', auth, async (req, res) => {
+    const {
+        i
+    } = req.params;
+    const user = await User.findById(req.session.user_id);
+    user.penyakit.splice(i-1, 1);
+    await user.save();
+    res.redirect('/dashboard');
+});
+
 app.get('/g1', auth, (req, res) => {
     res.render('form/g1');
 });
@@ -500,6 +519,8 @@ app.post('/g20', auth, async (req, res) => {
     res.redirect('/dashboard');
 });
 
-app.listen(3000, () => {
-    console.log('listening on port http://localhost:3000');
+connectDB().then(() => {
+    app.listen(port, () => {
+        console.log(`listening on port ${port}`);
+    });
 });

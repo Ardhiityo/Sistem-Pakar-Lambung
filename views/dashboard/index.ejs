@@ -28,7 +28,7 @@
                     <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
                     <path fill-rule="evenodd"
                         d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
-                </svg> Selamat datang, <%= user.nama %>!</a>
+                </svg><%= user.nama %>!</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
                 aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -36,13 +36,25 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav w-100 d-flex justify-content-end">
 
-                    <a class="nav-link d-flex" href="#">
+                    <a class="nav-link d-lg-flex d-none" href="#">
                         <button class="btn btn-outline-dark btn-sm mx-2 rounded-1" data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop">Ubah Sandi</button>
 
                         <form action="/logout" method="post">
                             <button type="submit" class="btn btn-dark btn-sm rounded-1">Keluar Akun</button>
                         </form>
+                    </a>
+
+                    <a class="nav-link d-lg-none pt-4 pb-3" href="#">
+
+                        <div class="row d-flex justify-content-center flex-column align-items-center">
+                            <button class="btn btn-outline-dark btn-sm rounded-1 mb-3 w-75" data-bs-toggle="modal"
+                                data-bs-target="#staticBackdrop">Ubah Sandi</button>
+
+                            <form action="/logout" method="post" class="d-flex justify-content-center w-75" style="box-sizing: unset;">
+                                <button type="submit" class="btn btn-dark btn-sm rounded-1 w-100">Keluar Akun</button>
+                            </form>
+                        </div>
                     </a>
 
                 </div>
@@ -52,7 +64,7 @@
     <!-- Navbar -->
 
     <!-- Content -->
-    <div class="container py-5" style="margin-top: 70px;">
+    <div class="container pt-5 pb-3" style="margin-top: 70px;">
 
 
         <div class="row d-flex justify-content-start">
@@ -93,23 +105,27 @@
 
                                             <button type="submit" class="btn btn-sm btn-dark rounded-1"
                                                 data-bs-toggle="modal" data-bs-target="#exampleModal">Hapus
-                                                Riwayat</button>
+                                                Semua</button>
                                             <% } %>
 
             </div>
         </div>
 
         <% if(user.penyakit.length> 0) {%>
-            <div class="container p-3 rounded-1" style="border: 2px solid black;">
+            <div class="container p-3 rounded-1 shadow" style="border: 1px solid rgba(0, 0, 0, 0.26);">
                 <% let i=1 %>
-                    <% for(const value of user.penyakit) {%>
-                        <table class="table table-hover table-bordered">
-                            <tbody>
+                    <table class="table table-hover table-bordered">
+                        <tbody>
+                            <% for(const value of user.penyakit) {%>
                                 <tr>
                                     <th>
                                         #<%= i++ %>
                                     </th>
-                                    <td></td>
+                                    <td class="d-flex justify-content-end">
+                                        <form action="delete/<%= i-1 %>?_method=DELETE" method="post">
+                                            <button class="btn btn-sm btn-outline-dark rounded-1">Hapus</button>
+                                        </form>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Id</th>
@@ -141,9 +157,17 @@
                                         <%= value.solusi %>
                                     </td>
                                 </tr>
-                            </tbody>
-                        </table>
-                        <% } %>
+                                <tr>
+                                    <th>
+                                        <br>
+                                    </th>
+                                    <td>
+                                        <br>
+                                    </td>
+                                </tr>
+                                <% } %>
+                        </tbody>
+                    </table>
             </div>
             <% } %>
 
@@ -159,15 +183,16 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Segala data Riwayat kamu akan kami hapus secara permamen, kami harapkan kamu untuk
+                    <p class="text-secondary">Segala data Riwayat kamu akan kami hapus secara permamen, kami harapkan
+                        kamu untuk
                         meyakinkan
                         diri sebelum riwayat diagnosa kamu akan benar-benar kami hapus secara permanen.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-sm rounded-1 btn-outline-dark" data-bs-dismiss="modal">Tidak
-                        jadi</button>
+                    <button type="button" class="btn btn-sm rounded-1 btn-outline-dark"
+                        data-bs-dismiss="modal">Batal</button>
                     <form action="/delete/penyakit?_method=DELETE" method="post">
-                        <button type="submit" class="btn btn-sm btn-dark rounded-1">Hapus saja</button>
+                        <button type="submit" class="btn btn-sm btn-dark rounded-1">Hapus</button>
                     </form>
                 </div>
             </div>
@@ -189,14 +214,16 @@
                         <div class="mb-3">
                             <label for="sandi" class="form-label">Sandi</label>
                             <input type="password" class="form-control" name="sandi" id="sandi"
-                                aria-describedby="pwHelp" required minlength="5" maxlength="10">
+                                aria-describedby="pwHelp" required minlength="5" maxlength="10"
+                                placeholder="Minimal 5 Karakter">
                             <div id="pwHelp" class="form-text">Pastikan selalu jaga kerahasian sandi kamu.
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="validasi" class="form-label">Konfirmasi sandi</label>
                             <input type="password" class="form-control" name="validasi" id="validasi"
-                                aria-describedby="vlHelp" required minlength="5" maxlength="10">
+                                aria-describedby="vlHelp" required minlength="5" maxlength="10"
+                                placeholder="Konfirmasi ulang sandi kamu">
                             <div id="vlHelp" class="form-text">Konfirmasi ulang sandi kamu, pastikan sudah
                                 benar.</div>
                         </div>

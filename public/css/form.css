@@ -1,0 +1,20 @@
+body {
+    font-family: "Ubuntu", sans-serif;
+    font-size: 18px;
+}
+
+.container {
+    min-height: 100vh;
+}
+
+main {
+    border: 1px solid rgba(0, 0, 0, 0.107);
+}
+
+label {
+    font-size: 1.3rem;
+}
+
+.form-check {
+    margin: 0 1.1em;
+}
