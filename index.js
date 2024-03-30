@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const flash = require('connect-flash');
 const User = require('./models/user');
+const { connect } = require('http2');
 const port = process.env.PORT || 3000;
 require('dotenv').config();
 const {
