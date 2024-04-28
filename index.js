@@ -7,7 +7,9 @@ const mongoose = require('mongoose');
 const methodOverride = require('method-override');
 const flash = require('connect-flash');
 const User = require('./models/user');
-const { connect } = require('http2');
+const {
+    connect
+} = require('http2');
 const port = process.env.PORT || 3000;
 require('dotenv').config();
 const {
@@ -51,7 +53,7 @@ const data = [{
         nama: 'Gerd',
         waktu: date(),
         gejala: ['Mual', 'Muntah', 'Sakit Tenggorokan', 'Susah Tidur', 'Bau Mulut', 'Nyeri Ulu pada Hati Seperti Terbakar'],
-        solusi: 'A',
+        solusi: 'Hindari makanan dan minuman yang memicu gejala GERD, seperti makanan pedas, berlemak, minuman berkafein, alkohol, dan makanan asam. Menghindari makan besar dan makan terlalu cepat juga dapat membantu.',
         point: [],
         maxPoint: 6
     },
@@ -60,7 +62,7 @@ const data = [{
         nama: 'Dispepsia',
         waktu: date(),
         gejala: ['Mual', 'Muntah', 'Nyeri Ulu pada Hati Seperti Terbakar', 'Perut Kembung', 'Sering Sendawa', 'Tidak Nafsu Makan', 'Timbul Asam di Mulut', 'Cepat Kenyang Saat Makan'],
-        solusi: 'B',
+        solusi: 'Makanan tinggi asam, seperti tomat, jeruk, dan produk susu tinggi lemak, dapat memicu gejala dispepsia pada beberapa orang. Mengurangi asupan makanan ini atau menggantinya dengan makanan rendah asam dapat membantu mengurangi gejala.',
         point: [],
         maxPoint: 8
     },
@@ -69,7 +71,7 @@ const data = [{
         nama: 'Tukak Lambung',
         waktu: date(),
         gejala: ['Nyeri di Leher', 'Nyeri di Punggung', 'Nyeri pada Malam Hari', 'Nyeri Parah saat Belum Makan'],
-        solusi: 'C',
+        solusi: 'Hindari stres: Stres dapat memicu atau memperburuk gejala tukak lambung. Mencari cara untuk mengelola stres, seperti dengan olahraga, meditasi, atau terapi, dapat membantu mengurangi gejala.',
         point: [],
         maxPoint: 4
     },
@@ -78,7 +80,7 @@ const data = [{
         nama: 'Kanker Lambung',
         waktu: date(),
         gejala: ['Mual', 'Muntah', 'Tidak Nafsu Makan', 'Cepat Kenyang saat Makan', 'Kelelahan', 'Nyeri di Tulang Dada', 'Sulit Menelan Makanan', 'Tinja Berwarna Hitam', 'Kekuningan pada Kulit atau pada Bagian Putih Mata'],
-        solusi: 'D',
+        solusi: 'Operasi dapat dilakukan untuk mengangkat tumor dan sebagian dari jaringan sekitarnya. Jika kanker masih dalam tahap awal dan belum menyebar ke jaringan lain, operasi dapat menjadi pilihan yang efektif.',
         point: [],
         maxPoint: 9
     },
@@ -298,7 +300,7 @@ app.delete('/delete/:i', auth, async (req, res) => {
         i
     } = req.params;
     const user = await User.findById(req.session.user_id);
-    user.penyakit.splice(i-1, 1);
+    user.penyakit.splice(i - 1, 1);
     await user.save();
     res.redirect('/dashboard');
 });
