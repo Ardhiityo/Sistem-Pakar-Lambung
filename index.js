@@ -71,7 +71,7 @@ const data = [{
         nama: 'Tukak Lambung',
         waktu: date(),
         gejala: ['Nyeri di Leher', 'Nyeri di Punggung', 'Nyeri pada Malam Hari', 'Nyeri Parah saat Belum Makan'],
-        solusi: 'Hindari stres: Stres dapat memicu atau memperburuk gejala tukak lambung. Mencari cara untuk mengelola stres, seperti dengan olahraga, meditasi, atau terapi, dapat membantu mengurangi gejala.',
+        solusi: 'Stres dapat memicu atau memperburuk gejala tukak lambung. Mencari cara untuk mengelola stres, seperti dengan olahraga, meditasi, atau terapi, dapat membantu mengurangi gejala.',
         point: [],
         maxPoint: 4
     },
