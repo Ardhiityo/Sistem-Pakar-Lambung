@@ -60,7 +60,6 @@ const data = [{
     {
         id: uuidv4(),
         nama: 'Dispepsia',
-        waktu: date(),
         gejala: ['Mual', 'Muntah', 'Nyeri Ulu pada Hati Seperti Terbakar', 'Perut Kembung', 'Sering Sendawa', 'Tidak Nafsu Makan', 'Timbul Asam di Mulut', 'Cepat Kenyang Saat Makan'],
         solusi: 'Makanan tinggi asam, seperti tomat, jeruk, dan produk susu tinggi lemak, dapat memicu gejala dispepsia pada beberapa orang. Mengurangi asupan makanan ini atau menggantinya dengan makanan rendah asam dapat membantu mengurangi gejala.',
         point: [],
@@ -69,7 +68,6 @@ const data = [{
     {
         id: uuidv4(),
         nama: 'Tukak Lambung',
-        waktu: date(),
         gejala: ['Nyeri di Leher', 'Nyeri di Punggung', 'Nyeri pada Malam Hari', 'Nyeri Parah saat Belum Makan'],
         solusi: 'Stres dapat memicu atau memperburuk gejala tukak lambung. Mencari cara untuk mengelola stres, seperti dengan olahraga, meditasi, atau terapi, dapat membantu mengurangi gejala.',
         point: [],
@@ -78,7 +76,6 @@ const data = [{
     {
         id: uuidv4(),
         nama: 'Kanker Lambung',
-        waktu: date(),
         gejala: ['Mual', 'Muntah', 'Tidak Nafsu Makan', 'Cepat Kenyang saat Makan', 'Kelelahan', 'Nyeri di Tulang Dada', 'Sulit Menelan Makanan', 'Tinja Berwarna Hitam', 'Kekuningan pada Kulit atau pada Bagian Putih Mata'],
         solusi: 'Operasi dapat dilakukan untuk mengangkat tumor dan sebagian dari jaringan sekitarnya. Jika kanker masih dalam tahap awal dan belum menyebar ke jaringan lain, operasi dapat menjadi pilihan yang efektif.',
         point: [],
@@ -87,7 +84,6 @@ const data = [{
     {
         id: uuidv4(),
         nama: 'Tidak ada Penyakit yang Sesuai',
-        waktu: date(),
         gejala: ['Tidak ditemukan Gejala yang sesuai dengan Penyakit'],
         solusi: 'Silahkan Datangi Rumah Sakit Terdekat untuk Penanganan yang Lebih Serius',
         point: [],
