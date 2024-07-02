@@ -201,7 +201,7 @@ app.post('/register', async (req, res) => {
                     await user.save();
                     // daftar akun berhasil
                     req.flash('flash_messages', 'Akun sukses terdaftar!');
-                    return res.redirect('/g1');
+                    return res.redirect('/dashboard');
                 }
             }
 
